@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurum Real Estate | Premium Property Solutions</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Chart.js for Admin Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ===== ROOT VARIABLES ===== */
+        :root {
+            --primary-gold: #D4AF37;
+            --secondary-gold: #F5D76E;
+            --dark-gold: #B8860B;
+            --light-gold: #FFF9E6;
+            --dark-bg: #121212;
+            --light-bg: #FFFFFF;
+            --text-dark: #333333;
+            --text-light: #F0F0F0;
+            --gray-bg: #F8F9FA;
+            --border-color: #E0E0E0;
+            --card-bg: #FFFFFF;
+            --sidebar-width: 260px;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        /* ===== DARK MODE ===== */
+        [data-theme="dark"] {
+            --primary-gold: #D4AF37;
+            --secondary-gold: #B8860B;
+            --light-gold: #2C2C2C;
+            --dark-bg: #000000;
+            --light-bg: #121212;
+            --text-dark: #E0E0E0;
+            --gray-bg: #1E1E1E;
+            --border-color: #333333;
+            --card-bg: #1E1E1E;
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background: var(--light-bg);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; }
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary-gold);
+        }
+
+        /* ===== NAVIGATION ===== */
+        .navbar {
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary-gold);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: #FFF;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active { color: var(--primary-gold); }
+
+        .theme-btn, .settings-trigger {
+            background: transparent;
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .theme-btn:hover, .settings-trigger:hover {
+            background: var(--primary-gold);
+            color: #000;
+        }
+
+        .login-btn {
+            background: var(--primary-gold);
+            color: #000 !important;
+            padding: 0.6rem 1.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .mobile-toggle {
+            display: none;
+            color: var(--primary-gold);
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* ===== PAGES ===== */
+        .page { display: none; padding-top: 80px; min-height: 80vh; animation: fadeIn 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            height: 100vh;
+            margin-top: -80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero video {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .hero-overlay {
+            background: rgba(0,0,0,0.5);
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            color: #FFF;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+
+        .hero p {
+            color: #F0F0F0;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* ===== SEARCH BAR ===== */
+        .search-box {
+            background: rgba(255,255,255,0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 900px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        [data-theme="dark"] .search-box {
+            background: rgba(30,30,30,0.95);
+        }
+
+        .search-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .search-tab {
+            padding: 0.5rem 2rem;
+            border: none;
+            background: transparent;
+            color: var(--text-dark);
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .search-tab.active {
+            color: var(--primary-gold);
+            border-color: var(--primary-gold);
+        }
+
+        .search-inputs {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 1rem;
+        }
+
+        input, select, textarea {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--light-bg);
+            color: var(--text-dark);
+            width: 100%;
+            font-family: inherit;
+        }
+
+        button.btn-primary {
+            background: var(--primary-gold);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        button.btn-primary:hover { opacity: 0.9; }
+
+        /* ===== PROPERTY GRID ===== */
+        .container { max-width: 1400px; margin: 0 auto; padding: 4rem 2rem; }
+        
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .property-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid var(--border-color);
+            position: relative;
+            display: block;
+        }
+
+        .property-card:hover { transform: translateY(-5px); }
+
+        .card-img-container {
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img-container img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .property-card:hover img { transform: scale(1.05); }
+
+        .card-badge {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: var(--primary-gold);
+            color: #000;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .card-details { padding: 1.5rem; }
+        .card-price { color: var(--primary-gold); font-size: 1.4rem; font-weight: 700; margin: 0.5rem 0; }
+        .card-features { display: flex; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); color: #777; font-size: 0.9rem; }
+
+        /* ===== PROPERTY DETAIL PAGE ===== */
+        .detail-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .gallery-container {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 10px;
+            height: 500px;
+            margin-bottom: 2rem;
+        }
+
+        .main-img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .sub-imgs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            height: 100%;
+            padding-right: 5px;
+        }
+
+        .sub-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .sub-img:hover, .sub-img.active { opacity: 1; border: 2px solid var(--primary-gold); }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+        }
+
+        .agent-box {
+            background: var(--card-bg);
+            border: 1px solid var(--primary-gold);
+            padding: 2rem;
+            border-radius: 15px;
+            position: sticky;
+            top: 100px;
+        }
+
+        .contact-options { display: grid; gap: 1rem; margin-top: 1.5rem; }
+        
+        .btn-whatsapp { background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; padding: 1rem; border-radius: 8px; font-weight: 600; }
+        .btn-call { background: var(--dark-bg); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; padding: 1rem; border-radius: 8px; font-weight: 600; }
+        .btn-insta { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; padding: 1rem; border-radius: 8px; font-weight: 600; margin-top: 1rem; }
+
+        .map-placeholder {
+            width: 100%;
+            height: 300px;
+            background: #eee;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2rem;
+            color: #777;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ===== ADMIN & OWNER DASHBOARD ===== */
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+            background: var(--gray-bg);
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #1A1A1A;
+            color: white;
+            padding: 2rem;
+            position: fixed;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            font-size: 1.5rem;
+            color: var(--primary-gold);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li { margin-bottom: 1rem; }
+
+        .sidebar-menu a {
+            color: #aaa;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--primary-gold);
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #333;
+            padding-top: 1rem;
+        }
+
+        .main-panel {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            color: var(--text-dark);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-gold);
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            height: 400px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #111;
+            color: #ccc;
+            padding: 4rem 2rem 2rem;
+            margin-top: 4rem;
+            border-top: 4px solid var(--primary-gold);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-col h4 {
+            margin-bottom: 1.5rem;
+            color: var(--primary-gold);
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .footer-col p, .footer-col a {
+            color: #bbb;
+            margin-bottom: 1rem;
+            display: block;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+        
+        .footer-col a:hover {
+            color: var(--primary-gold);
+            padding-left: 5px;
+        }
+
+        /* ===== VISITOR SETTINGS DROPDOWN ===== */
+        .settings-menu {
+            position: absolute;
+            top: 70px;
+            right: 2rem;
+            background: var(--card-bg);
+            width: 250px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            display: none;
+            z-index: 1001;
+            border: 1px solid var(--border-color);
+        }
+
+        .settings-menu.active { display: block; animation: fadeIn 0.3s; }
+
+        .settings-header {
+            padding: 0 1.5rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.8rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .settings-item:hover { background: var(--gray-bg); color: var(--primary-gold); }
+
+        /* ===== AUTH MODALS ===== */
+        .auth-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            display: none;
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        .auth-modal.active { display: flex; animation: fadeIn 0.3s; }
+        
+        .auth-content {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 90%; max-width: 450px;
+            border: 1px solid var(--primary-gold);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .auth-close {
+            position: absolute; top: 15px; right: 20px;
+            font-size: 1.5rem; cursor: pointer; color: #777;
+        }
+        
+        .auth-choice-btn {
+            display: block; width: 100%; padding: 1rem; margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--gray-bg); border-radius: 10px;
+            font-weight: 600; cursor: pointer; text-align: left;
+            display: flex; align-items: center; gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .auth-choice-btn:hover {
+            border-color: var(--primary-gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .auth-choice-btn i { font-size: 1.5rem; color: var(--primary-gold); }
+
+        .auth-view { display: none; }
+        .auth-view.active { display: block; animation: slideIn 0.3s ease; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .auth-link {
+            color: var(--primary-gold);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* ===== MODALS GENERIC ===== */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            display: none;
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%; max-width: 400px;
+            animation: fadeIn 0.3s;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed; top: 0; right: -100%;
+                width: 80%; height: 100vh;
+                background: var(--dark-bg);
+                flex-direction: column;
+                padding: 5rem 2rem;
+                transition: 0.4s;
+            }
+            .nav-menu.active { right: 0; }
+            .mobile-toggle { display: block; z-index: 1001; }
+            .search-inputs { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .gallery-container { grid-template-columns: 1fr; height: auto; }
+            .sub-imgs { flex-direction: row; height: 80px; overflow-x: auto; margin-top: 10px; }
+            .sidebar { display: none; } /* Mobile sidebar handling would be separate */
+            .main-panel { margin-left: 0; }
+            .dashboard-layout { flex-direction: column; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- NAVIGATION -->
+    <nav class="navbar" id="mainNav">
+        <div class="nav-container">
+            <a href="#home" class="logo">
+                <i class="fas fa-gem"></i> AURUM
+            </a>
+            
+            <button class="mobile-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="nav-menu" id="navMenu">
+                <a href="#home" onclick="route('home')">Home</a>
+                <a href="#buying" onclick="route('buying')">Buying</a>
+                <a href="#renting" onclick="route('renting')">Renting</a>
+                <a href="#student" onclick="route('student')">Student</a>
+                
+                <button class="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <!-- Auth Section -->
+                <div id="authSection">
+                    <button class="login-btn" onclick="openLoginModal()">Sign In</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SETTINGS DROPDOWN (Visitor) -->
+    <div class="settings-menu" id="visitorSettings">
+        <div class="settings-header">
+            <h4 id="settingsName">User Name</h4>
+            <small onclick="logout()" style="color: red; cursor: pointer;">Sign Out</small>
+        </div>
+        <a class="settings-item"><i class="fas fa-list"></i> My Listings</a>
+        <a class="settings-item"><i class="fas fa-heart"></i> My Favourites</a>
+        <a class="settings-item"><i class="fas fa-bell"></i> My Email Alerts</a>
+        <a class="settings-item"><i class="fas fa-hand-holding-usd"></i> My Requests</a>
+        <a class="settings-item"><i class="fas fa-file-contract"></i> My Applications</a>
+        <a class="settings-item"><i class="fas fa-exchange-alt"></i> Compare Listings</a>
+        <a class="settings-item"><i class="fas fa-cog"></i> Account Settings</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="app-content">
+        
+        <!-- HOME PAGE -->
+        <div id="home-page" class="page active">
+            <section class="hero">
+                <!-- Interior Real Estate Video -->
+                <video autoplay muted loop playsinline>
+                    <source src="https://videos.pexels.com/video-files/7578544/7578544-hd_1920_1080_30fps.mp4" type="video/mp4">
+                </video>
+                <div class="hero-overlay">
+                    <h1>Where Value Meets Vision</h1>
+                    <p>Discover Zimbabwe's Most Exclusive Properties</p>
+                    
+                    <div class="search-box">
+                        <div class="search-tabs">
+                            <button class="search-tab active" onclick="setSearchMode('buy', this)">Buy</button>
+                            <button class="search-tab" onclick="setSearchMode('rent', this)">Rent</button>
+                            <button class="search-tab" onclick="setSearchMode('student', this)">Student</button>
+                        </div>
+                        <div class="search-inputs">
+                            <input type="text" placeholder="City, Suburb, or Area">
+                            <select id="propertyTypeSelect">
+                                <option value="">Property Type</option>
+                                <option>House</option>
+                                <option>Apartment</option>
+                                <option>Land</option>
+                                <option>Commercial</option>
+                            </select>
+                            <select>
+                                <option>Max Price</option>
+                                <option>$50k</option>
+                                <option>$100k</option>
+                                <option>$500k+</option>
+                            </select>
+                            <button class="btn-primary"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="container">
+                <h2 class="section-title">Featured Listings</h2>
+                <div class="property-grid" id="featuredGrid">
+                    <!-- JS Injected -->
+                </div>
+            </section>
+        </div>
+
+        <!-- LISTING PAGES (Template for Buy/Rent/Student) -->
+        <div id="listings-page" class="page">
+            <div class="container">
+                <h2 class="section-title" id="listingTitle">Properties</h2>
+                <!-- Filters could go here -->
+                <div class="property-grid" id="mainGrid"></div>
+            </div>
+        </div>
+
+        <!-- PROPERTY DETAIL PAGE -->
+        <div id="detail-page" class="page">
+            <div class="detail-wrapper">
+                <a href="#" onclick="history.back()" style="display:inline-block; margin-bottom:1rem; color:var(--primary-gold); text-decoration:none;"><i class="fas fa-arrow-left"></i> Back to Listings</a>
+                
+                <div class="gallery-container">
+                    <img id="mainDetailImg" class="main-img" src="" alt="Main Property Image">
+                    <div class="sub-imgs" id="subImgsContainer">
+                        <!-- Thumbnails -->
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="info-col">
+                        <h1 id="detailTitle" style="margin-bottom:0.5rem;">Property Title</h1>
+                        <p id="detailLoc" style="color:#777; margin-bottom:1.5rem;"><i class="fas fa-map-marker-alt"></i> Location</p>
+                        
+                        <h3 style="margin-bottom:1rem;">Description</h3>
+                        <p id="detailDesc" style="margin-bottom:2rem; white-space: pre-line;">
+                            Detailed description goes here...
+                        </p>
+
+                        <h3 style="margin-bottom:1rem;">Property Features</h3>
+                        <div id="detailFeatures" class="card-features" style="border:none; padding:0; display:grid; grid-template-columns: repeat(2, 1fr);">
+                            <!-- Features -->
+                        </div>
+
+                        <!-- MAP PLACEHOLDER -->
+                        <div class="map-placeholder">
+                            <img src="https://maps.googleapis.com/maps/api/staticmap?center=-17.824858,31.053028&zoom=13&size=600x300&maptype=roadmap&key=" alt="Static Map Placeholder (Simulated)">
+                            <div style="position:absolute; background:white; padding:5px 10px; border-radius:5px; font-weight:bold;">Map View (Simulated)</div>
+                        </div>
+                    </div>
+
+                    <div class="agent-col">
+                        <div class="agent-box">
+                            <h2 id="detailPrice" style="color:var(--primary-gold); margin-bottom:1rem;">$0</h2>
+                            <p>Listed by <strong>Aurum Real Estate</strong></p>
+                            
+                            <div class="contact-options">
+                                <button onclick="openWhatsAppModal()" class="btn-whatsapp">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp Agent
+                                </button>
+                                <a href="tel:+263783455849" class="btn-call">
+                                    <i class="fas fa-phone"></i> Call Agent
+                                </a>
+                                <a href="https://instagram.com/real.blvckdot" target="_blank" class="btn-insta">
+                                    <i class="fab fa-instagram"></i> View on Instagram
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="#home" class="logo" style="margin-bottom: 1rem;">
+                        <i class="fas fa-gem"></i> AURUM
+                    </a>
+                    <p>Zimbabwe's premier real estate solution. Find your place in Emerald Hill, Borrowdale, and beyond.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <a href="#buying" onclick="route('buying')">Buy Properties</a>
+                    <a href="#renting" onclick="route('renting')">Rent Properties</a>
+                    <a href="#student" onclick="route('student')">Student Housing</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <p><i class="fas fa-phone"></i> +263 78 345 5849</p>
+                    <p><i class="fas fa-envelope"></i> info@aurumrealestate.co.zw</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 100 The Chase, Emerald Hill, Harare</p>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:3rem; padding-top:2rem; border-top:1px solid #333; color:#555;">
+                &copy; 2024 Aurum Real Estate. All rights reserved.
+            </div>
+        </footer>
+    </div>
+
+    <!-- NEW SMART LOGIN MODAL -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-content">
+            <span class="auth-close" onclick="closeAuthModal()">&times;</span>
+            
+            <!-- STEP 1: SELECT ROLE -->
+            <div id="authStepRole" class="auth-view active">
+                <h2 style="text-align:center; margin-bottom:0.5rem;">Welcome to Aurum</h2>
+                <p style="text-align:center; margin-bottom:2rem; color:#777;">Please select how you want to continue</p>
+                
+                <button class="auth-choice-btn" onclick="showAuthView('authStepVisitor')">
+                    <i class="fas fa-user"></i>
+                    <div>
+                        <div>Visitor Login</div>
+                        <small style="font-weight:400; color:#666;">For property seekers</small>
+                    </div>
+                </button>
+                
+                <button class="auth-choice-btn" onclick="showAuthView('authStepAdmin')">
+                    <i class="fas fa-user-shield"></i>
+                    <div>
+                        <div>Admin / Owner</div>
+                        <small style="font-weight:400; color:#666;">For staff and management</small>
+                    </div>
+                </button>
+            </div>
+
+            <!-- STEP 2: VISITOR AUTH -->
+            <div id="authStepVisitor" class="auth-view">
+                <div style="margin-bottom:1rem; cursor:pointer;" onclick="showAuthView('authStepRole')"><i class="fas fa-arrow-left"></i> Back</div>
+                
+                <!-- Visitor Login Form -->
+                <div id="visitorLoginForm">
+                    <h2 style="margin-bottom:1.5rem;">Visitor Sign In</h2>
+                    <form onsubmit="handleVisitorLogin(event)">
+                        <div style="margin-bottom:1rem;">
+                            <label>Email</label>
+                            <input type="email" id="visitorEmail" required>
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label>Password</label>
+                            <input type="password" id="visitorPass" required>
+                        </div>
+                        <button class="btn-primary" style="width:100%;">Sign In</button>
+                    </form>
+                    <div style="margin-top:1rem; text-align:center; font-size:0.9rem;">
+                        <a onclick="toggleVisitorForms('forgot')" class="auth-link">Forgot Password?</a>
+                        <span style="margin:0 10px;">|</span>
+                        <a onclick="toggleVisitorForms('register')" class="auth-link">Create Account</a>
+                    </div>
+                </div>
+
+                <!-- Visitor Register Form -->
+                <div id="visitorRegisterForm" style="display:none;">
+                    <h2 style="margin-bottom:1.5rem;">Create Account</h2>
+                    <form onsubmit="handleVisitorRegister(event)">
+                        <div style="margin-bottom:1rem;">
+                            <label>Full Name</label>
+                            <input type="text" id="regName" required>
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label>Email</label>
+                            <input type="email" id="regEmail" required>
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label>Password</label>
+                            <input type="password" id="regPass" required>
+                        </div>
+                        <button class="btn-primary" style="width:100%;">Register</button>
+                    </form>
+                    <div style="margin-top:1rem; text-align:center;">
+                        Already have an account? <a onclick="toggleVisitorForms('login')" class="auth-link">Sign In</a>
+                    </div>
+                </div>
+
+                <!-- Visitor Forgot Password -->
+                <div id="visitorForgotForm" style="display:none;">
+                    <h2 style="margin-bottom:1.5rem;">Reset Password</h2>
+                    <p style="margin-bottom:1rem; color:#666;">Enter your email to receive a reset link.</p>
+                    <div style="margin-bottom:1rem;">
+                        <input type="email" id="resetEmail" placeholder="Enter your email">
+                    </div>
+                    <button class="btn-primary" style="width:100%;" onclick="sendResetLink()">Send Link</button>
+                    <div style="margin-top:1rem; text-align:center;">
+                        <a onclick="toggleVisitorForms('login')" class="auth-link">Back to Login</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: ADMIN AUTH -->
+            <div id="authStepAdmin" class="auth-view">
+                <div style="margin-bottom:1rem; cursor:pointer;" onclick="showAuthView('authStepRole')"><i class="fas fa-arrow-left"></i> Back</div>
+                <h2 style="margin-bottom:1.5rem;">Admin Access</h2>
+                <form onsubmit="handleAdminLogin(event)">
+                    <div style="margin-bottom:1rem;">
+                        <label>Username</label>
+                        <input type="text" id="adminUser" required placeholder="e.g. Victor">
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label>Password</label>
+                        <input type="password" id="adminPass" required>
+                    </div>
+                    <button class="btn-primary" style="width:100%;">Access Dashboard</button>
+                </form>
+                <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #eee;">
+                    <p style="font-size:0.9rem; color:#666; margin-bottom:10px;">New staff member?</p>
+                    <button onclick="requestAccess()" style="width:100%; padding:0.8rem; background:transparent; border:1px solid var(--primary-gold); color:var(--primary-gold); border-radius:8px; cursor:pointer;">Request Access from Owner</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="admin-panel" style="display:none;">
+        <div class="dashboard-layout">
+            <aside class="sidebar">
+                <div class="sidebar-brand"><i class="fas fa-gem"></i> ADMIN PANEL</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-home"></i> Properties</a></li>
+                    <li><a href="#"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="#"><i class="fas fa-envelope"></i> Messages</a></li>
+                </ul>
+                <div class="sidebar-footer">
+                    <a href="#" onclick="backToSite()"><i class="fas fa-arrow-left"></i> Back to Site</a>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+                </div>
+            </aside>
+            <main class="main-panel">
+                <h2>Admin Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>1,204</h3>
+                        <p>Total Visitors</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>45</h3>
+                        <p>Active Listings</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>12</h3>
+                        <p>Pending Approvals</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="adminTrafficChart"></canvas>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- OWNER PANEL -->
+    <div id="owner-panel" style="display:none;">
+        <div class="dashboard-layout">
+            <aside class="sidebar">
+                <div class="sidebar-brand" style="color: var(--secondary-gold);"><i class="fas fa-crown"></i> OWNER SUITE</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active"><i class="fas fa-chart-pie"></i> Master Overview</a></li>
+                    <li><a href="#"><i class="fas fa-money-bill-wave"></i> Financials</a></li>
+                    <li><a href="#"><i class="fas fa-user-shield"></i> Admin Management</a></li>
+                    <li><a href="#"><i class="fas fa-globe"></i> Site Analytics</a></li>
+                </ul>
+                <div class="sidebar-footer">
+                    <a href="#" onclick="backToSite()"><i class="fas fa-arrow-left"></i> Back to Site</a>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+                </div>
+            </aside>
+            <main class="main-panel">
+                <h2>Owner Dashboard - Welcome Victor</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>$2.4M</h3>
+                        <p>Portfolio Value</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>+18%</h3>
+                        <p>Monthly Growth</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>850</h3>
+                        <p>Leads Generated</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="ownerTrafficChart"></canvas>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- WHATSAPP MODAL -->
+    <div id="waModal" class="modal">
+        <div class="modal-content">
+            <h3>Send Message</h3>
+            <p style="margin-bottom:1rem;">Customize your inquiry message:</p>
+            <textarea id="waMessage" rows="4" style="margin-bottom:1rem;">Hi, I am interested in this property. Is it still available?</textarea>
+            <div style="display:flex; gap:10px;">
+                <button onclick="sendWhatsApp()" class="btn-primary" style="flex:1; background:#25D366; color:white;">Send</button>
+                <button onclick="closeModal('waModal')" class="btn-primary" style="flex:1; background:#ccc;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA STORE =====
+        const DB = {
+            properties: [
+                {
+                    id: 1, type: 'buy', cat: 'House', price: 450000, title: 'Luxury Golf Estate Home', loc: 'Borrowdale Brooke',
+                    beds: 4, baths: 3, area: 2000,
+                    desc: "Experience the pinnacle of luxury living in the prestigious Borrowdale Brooke Golf Estate. This magnificent 4-bedroom home offers breathtaking views of the fairway, a state-of-the-art solar system, and a modern open-plan kitchen. Security is paramount with 24-hour patrols. The lush garden features a sparkling pool and entertainment gazebo perfect for hosting guests.",
+                    images: Array(10).fill('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'),
+                    features: ['Golf Course View', 'Solar System', 'Borehole', 'Swimming Pool', 'Gated Community', 'Double Garage']
+                },
+                {
+                    id: 2, type: 'rent', cat: 'Apartment', price: 1200, title: 'Modern Garden Flat', loc: 'Avondale',
+                    beds: 2, baths: 2, area: 120,
+                    desc: "A beautifully renovated garden flat located within walking distance to Avondale Shopping Centre. Features include a modern fitted kitchen, teak flooring, and a private garden. The complex is highly secure with electric fencing and a night guard. Perfect for young professionals or a small family.",
+                    images: Array(10).fill('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80'),
+                    features: ['Borehole', 'Security', 'Garden', 'Fitted Kitchen', 'WiFi Ready']
+                },
+                {
+                    id: 3, type: 'student', cat: 'Room', price: 200, title: 'Student Accommodation', loc: 'Mt Pleasant',
+                    beds: 1, baths: 1, area: 25,
+                    desc: "Affordable and secure student accommodation just 5 minutes walk from UZ. Rent includes water, electricity, and unlimited WiFi. The property has a shared kitchen and study area. A resident warden ensures a quiet environment for studying.",
+                    images: Array(10).fill('https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80'),
+                    features: ['Walk to UZ', 'WiFi Included', 'Furnished', 'Study Desk', 'Solar Backup']
+                },
+                {
+                    id: 4, type: 'buy', cat: 'House', price: 280000, title: 'Family Home', loc: 'Highlands',
+                    beds: 3, baths: 2, area: 4000,
+                    desc: "Spacious family home on an acre of flat land. Potential for cluster development.",
+                    images: Array(10).fill('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80'),
+                    features: ['4000sqm Land', 'Old Charm', 'Staff Quarters']
+                }
+            ],
+            currentUser: null
+        };
+
+        // ===== INITIALIZATION =====
+        window.onload = () => {
+            renderProperties();
+            checkSession();
+        };
+
+        function route(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('navMenu').classList.remove('active'); // Close mobile menu
+            
+            if(pageId === 'home') document.getElementById('home-page').classList.add('active');
+            else if (['buying', 'renting', 'student'].includes(pageId)) {
+                document.getElementById('listings-page').classList.add('active');
+                renderCategory(pageId);
+            }
+            // Removed direct routing to login page as it's now a modal
+        }
+
+        function checkSession() {
+            // Simple session check logic if needed
+        }
+
+        // ===== RENDERING =====
+        function renderProperties() {
+            const container = document.getElementById('featuredGrid');
+            container.innerHTML = DB.properties.slice(0, 3).map(p => createCard(p)).join('');
+        }
+
+        function renderCategory(cat) {
+            let type = cat === 'buying' ? 'buy' : cat === 'renting' ? 'rent' : 'student';
+            document.getElementById('listingTitle').innerText = cat.charAt(0).toUpperCase() + cat.slice(1) + " Properties";
+            
+            const filtered = DB.properties.filter(p => p.type === type);
+            document.getElementById('mainGrid').innerHTML = filtered.map(p => createCard(p)).join('');
+        }
+
+        function createCard(p) {
+            return `
+                <a href="#" onclick="openDetail(${p.id}); return false;" class="property-card">
+                    <div class="card-img-container">
+                        <img src="${p.images[0]}" alt="${p.title}">
+                        <span class="card-badge">${p.type.toUpperCase()}</span>
+                    </div>
+                    <div class="card-details">
+                        <h3 style="margin-bottom:0.5rem;">${p.title}</h3>
+                        <p style="color:#777; margin-bottom:0.5rem;"><i class="fas fa-map-marker-alt"></i> ${p.loc}</p>
+                        <div class="card-price">$${p.price.toLocaleString()}</div>
+                        <div class="card-features">
+                            <span><i class="fas fa-bed"></i> ${p.beds}</span>
+                            <span><i class="fas fa-bath"></i> ${p.baths}</span>
+                            <span><i class="fas fa-ruler-combined"></i> ${p.area}m²</span>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        // ===== DETAILS & GALLERY =====
+        let currentDetailId = null;
+
+        function openDetail(id) {
+            const p = DB.properties.find(x => x.id === id);
+            currentDetailId = id;
+
+            // DOM Elements
+            document.getElementById('detailTitle').innerText = p.title;
+            document.getElementById('detailLoc').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${p.loc}`;
+            document.getElementById('detailPrice').innerText = `$${p.price.toLocaleString()}`;
+            document.getElementById('detailDesc').innerText = p.desc;
+            document.getElementById('mainDetailImg').src = p.images[0];
+
+            // Features
+            document.getElementById('detailFeatures').innerHTML = p.features.map(f => 
+                `<span><i class="fas fa-check-circle" style="color:var(--primary-gold);"></i> ${f}</span>`
+            ).join('');
+
+            // Gallery
+            const subContainer = document.getElementById('subImgsContainer');
+            subContainer.innerHTML = p.images.map((img, index) => 
+                `<img src="${img}" class="sub-img" onclick="changeMainImg('${img}', this)">`
+            ).join('');
+
+            // Switch view
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('detail-page').classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function changeMainImg(src, el) {
+            document.getElementById('mainDetailImg').src = src;
+            document.querySelectorAll('.sub-img').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // ===== WHATSAPP & CONTACT =====
+        function openWhatsAppModal() {
+            document.getElementById('waModal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function sendWhatsApp() {
+            const p = DB.properties.find(x => x.id === currentDetailId);
+            const msg = document.getElementById('waMessage').value;
+            const fullMsg = `${msg} (Ref: ${p.title})`;
+            const url = `https://wa.me/263783455849?text=${encodeURIComponent(fullMsg)}`;
+            window.open(url, '_blank');
+            closeModal('waModal');
+        }
+
+        // ===== AUTHENTICATION LOGIC (MODAL BASED) =====
+        
+        function openLoginModal() {
+            document.getElementById('authModal').classList.add('active');
+            showAuthView('authStepRole'); // Reset to role selection
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function showAuthView(viewId) {
+            document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function toggleVisitorForms(formType) {
+            document.getElementById('visitorLoginForm').style.display = 'none';
+            document.getElementById('visitorRegisterForm').style.display = 'none';
+            document.getElementById('visitorForgotForm').style.display = 'none';
+
+            if(formType === 'login') document.getElementById('visitorLoginForm').style.display = 'block';
+            else if(formType === 'register') document.getElementById('visitorRegisterForm').style.display = 'block';
+            else if(formType === 'forgot') document.getElementById('visitorForgotForm').style.display = 'block';
+        }
+
+        // VISITOR LOGIC
+        function handleVisitorLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('visitorEmail').value;
+            // Mock Login
+            loginSuccess({ name: email.split('@')[0], role: 'visitor' });
+            closeAuthModal();
+        }
+
+        function handleVisitorRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            alert(`Account created for ${name}! Please sign in.`);
+            toggleVisitorForms('login');
+        }
+
+        function sendResetLink() {
+            const email = document.getElementById('resetEmail').value;
+            alert(`Password reset link sent to ${email}`);
+            toggleVisitorForms('login');
+        }
+
+        // ADMIN LOGIC
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+
+            if (user === 'Victor' && pass === 'Tendai') {
+                loginSuccess({ name: 'Victor', role: 'owner' });
+            } else if (user === 'admin' && pass === 'admin123') {
+                loginSuccess({ name: 'Admin', role: 'admin' });
+            } else {
+                alert('Invalid Admin Credentials');
+                return;
+            }
+            closeAuthModal();
+        }
+
+        function requestAccess() {
+            alert("Access request sent to Owner (Victor). You will be notified via email.");
+        }
+
+        // COMMON SUCCESS
+        function loginSuccess(user) {
+            DB.currentUser = user;
+            
+            // Redirect based on role
+            if(user.role === 'owner') {
+                initOwnerDashboard();
+            } else if(user.role === 'admin') {
+                initAdminDashboard();
+            } else {
+                // Visitor
+                document.getElementById('authSection').innerHTML = `
+                    <button class="settings-trigger" onclick="toggleSettingsMenu()">
+                        <i class="fas fa-user-circle" style="font-size:1.5rem;"></i>
+                    </button>
+                `;
+                document.getElementById('settingsName').innerText = user.name;
+                route('home');
+            }
+        }
+
+        function logout() {
+            DB.currentUser = null;
+            document.getElementById('authSection').innerHTML = `<button class="login-btn" onclick="openLoginModal()">Sign In</button>`;
+            document.getElementById('visitorSettings').classList.remove('active');
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('owner-panel').style.display = 'none';
+            document.getElementById('mainNav').style.display = 'block';
+            document.getElementById('app-content').style.display = 'block';
+            route('home');
+        }
+
+        // Visitor Settings Toggle
+        function toggleSettingsMenu() {
+            const menu = document.getElementById('visitorSettings');
+            menu.classList.toggle('active');
+        }
+
+        // ===== ADMIN/OWNER DASHBOARDS =====
+        function backToSite() {
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('owner-panel').style.display = 'none';
+            document.getElementById('mainNav').style.display = 'block';
+            document.getElementById('app-content').style.display = 'block';
+            
+            // Update Nav to show "Back to Admin"
+            document.getElementById('authSection').innerHTML = `
+                <button onclick="returnToDashboard()" class="login-btn" style="background:#333; color:white!important;">
+                    <i class="fas fa-columns"></i> Dashboard
+                </button>
+            `;
+            route('home');
+        }
+
+        function returnToDashboard() {
+            if(DB.currentUser.role === 'owner') initOwnerDashboard();
+            else if(DB.currentUser.role === 'admin') initAdminDashboard();
+        }
+
+        function initAdminDashboard() {
+            hideApp();
+            document.getElementById('admin-panel').style.display = 'block';
+            renderCharts('adminTrafficChart');
+        }
+
+        function initOwnerDashboard() {
+            hideApp();
+            document.getElementById('owner-panel').style.display = 'block';
+            renderCharts('ownerTrafficChart');
+        }
+
+        function renderCharts(id) {
+            const ctx = document.getElementById(id);
+            if(window[id] instanceof Chart) { window[id].destroy(); } // destroy old instance if exists
+            
+            window[id] = new Chart(ctx, {
+                type: id.includes('admin') ? 'line' : 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Performance',
+                        data: [12, 19, 3, 5, 2, 3],
+                        backgroundColor: '#D4AF37',
+                        borderColor: '#D4AF37'
+                    }]
+                }
+            });
+        }
+
+        function hideApp() {
+            document.getElementById('app-content').style.display = 'none';
+            document.getElementById('mainNav').style.display = 'none';
+        }
+
+        // ===== UTILS =====
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', next);
+            document.querySelector('.theme-btn i').className = next === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        function toggleMenu() {
+            document.getElementById('navMenu').classList.toggle('active');
+        }
+
+        function setSearchMode(mode, btn) {
+            document.querySelectorAll('.search-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            // Update dropdown options logic here if needed
+        }
+    </script>
+</body>
+</html>

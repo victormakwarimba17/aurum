@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Chart.js for Admin Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- AOS for animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <style>
         /* ===== ROOT VARIABLES ===== */
@@ -27,6 +30,8 @@
             --card-bg: #FFFFFF;
             --sidebar-width: 260px;
             --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --shadow-hover: 0 15px 40px rgba(212, 175, 55, 0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         /* ===== DARK MODE ===== */
@@ -41,6 +46,69 @@
             --border-color: #333333;
             --card-bg: #1E1E1E;
             --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --shadow-hover: 0 15px 40px rgba(212, 175, 55, 0.1);
+        }
+
+        /* ===== PARALLAX EFFECTS ===== */
+        .parallax-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            z-index: -1;
+            transform: translateY(0);
+            transition: transform 0.1s linear;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
         }
 
         /* ===== RESET & BASE ===== */
@@ -86,6 +154,12 @@
             border-bottom: 1px solid rgba(212, 175, 55, 0.2);
         }
 
+        .navbar-scrolled {
+            background: rgba(18, 18, 18, 0.98);
+            padding: 0.7rem 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
         .nav-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -120,11 +194,32 @@
             transition: color 0.3s;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            position: relative;
         }
 
-        .nav-menu a:hover, .nav-menu a.active { color: var(--primary-gold); }
+        .nav-menu a:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gold);
+            transition: width 0.3s;
+        }
 
-        .theme-btn, .settings-trigger {
+        .nav-menu a:hover:after,
+        .nav-menu a.active:after {
+            width: 100%;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: var(--primary-gold);
+        }
+
+        .theme-btn,
+        .settings-trigger {
             background: transparent;
             border: 1px solid var(--primary-gold);
             color: var(--primary-gold);
@@ -135,12 +230,14 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
         
-        .theme-btn:hover, .settings-trigger:hover {
+        .theme-btn:hover,
+        .settings-trigger:hover {
             background: var(--primary-gold);
             color: #000;
+            transform: rotate(10deg);
         }
 
         .login-btn {
@@ -150,6 +247,13 @@
             border-radius: 30px;
             font-weight: 600;
             cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
         }
 
         .mobile-toggle {
@@ -159,14 +263,31 @@
             background: none;
             border: none;
             cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .mobile-toggle:hover {
+            transform: scale(1.1);
         }
 
         /* ===== PAGES ===== */
-        .page { display: none; padding-top: 80px; min-height: 80vh; animation: fadeIn 0.5s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .page {
+            display: none;
+            padding-top: 80px;
+            min-height: 80vh;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeInUp 0.5s ease;
+        }
 
-        /* ===== HERO SECTION ===== */
+        /* ===== HERO SECTION WITH PARALLAX ===== */
         .hero {
             height: 100vh;
             margin-top: -80px;
@@ -177,17 +298,22 @@
             overflow: hidden;
         }
 
-        .hero video {
+        .hero-video {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             z-index: -1;
+            transform: scale(1.1);
+            transition: transform 0.1s linear;
         }
 
         .hero-overlay {
-            background: rgba(0,0,0,0.5);
-            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -201,12 +327,14 @@
             color: #FFF;
             margin-bottom: 1rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+            animation: fadeInUp 1s ease;
         }
 
         .hero p {
             color: #F0F0F0;
             font-size: 1.2rem;
             margin-bottom: 3rem;
+            animation: fadeInUp 1s ease 0.2s both;
         }
 
         /* ===== SEARCH BAR ===== */
@@ -217,10 +345,17 @@
             width: 90%;
             max-width: 900px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease 0.4s both;
+            transition: var(--transition);
         }
 
         [data-theme="dark"] .search-box {
             background: rgba(30,30,30,0.95);
+        }
+
+        .search-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
         }
 
         .search-tabs {
@@ -238,11 +373,16 @@
             border-bottom: 2px solid transparent;
             font-weight: 600;
             cursor: pointer;
+            transition: var(--transition);
         }
 
         .search-tab.active {
             color: var(--primary-gold);
             border-color: var(--primary-gold);
+        }
+
+        .search-tab:hover:not(.active) {
+            color: var(--primary-gold);
         }
 
         .search-inputs {
@@ -259,6 +399,13 @@
             color: var(--text-dark);
             width: 100%;
             font-family: inherit;
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
 
         button.btn-primary {
@@ -269,14 +416,25 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.3s;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
-        button.btn-primary:hover { opacity: 0.9; }
+        button.btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
 
         /* ===== PROPERTY GRID ===== */
-        .container { max-width: 1400px; margin: 0 auto; padding: 4rem 2rem; }
-        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
         .property-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -288,15 +446,19 @@
             border-radius: 15px;
             overflow: hidden;
             box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
+            transition: var(--transition);
             text-decoration: none;
             color: inherit;
             border: 1px solid var(--border-color);
             position: relative;
             display: block;
+            animation: fadeInUp 0.5s ease;
         }
 
-        .property-card:hover { transform: translateY(-5px); }
+        .property-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
 
         .card-img-container {
             height: 250px;
@@ -305,27 +467,49 @@
         }
 
         .card-img-container img {
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             transition: transform 0.5s;
         }
 
-        .property-card:hover img { transform: scale(1.05); }
+        .property-card:hover img {
+            transform: scale(1.1);
+        }
 
         .card-badge {
             position: absolute;
-            top: 15px; right: 15px;
+            top: 15px;
+            right: 15px;
             background: var(--primary-gold);
             color: #000;
             padding: 0.4rem 1rem;
             border-radius: 20px;
             font-weight: 600;
             font-size: 0.85rem;
+            z-index: 2;
         }
 
-        .card-details { padding: 1.5rem; }
-        .card-price { color: var(--primary-gold); font-size: 1.4rem; font-weight: 700; margin: 0.5rem 0; }
-        .card-features { display: flex; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); color: #777; font-size: 0.9rem; }
+        .card-details {
+            padding: 1.5rem;
+        }
+
+        .card-price {
+            color: var(--primary-gold);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .card-features {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            color: #777;
+            font-size: 0.9rem;
+        }
 
         /* ===== PROPERTY DETAIL PAGE ===== */
         .detail-wrapper {
@@ -343,10 +527,16 @@
         }
 
         .main-img {
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             border-radius: 10px;
             cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .main-img:hover {
+            transform: scale(1.02);
         }
 
         .sub-imgs {
@@ -365,10 +555,15 @@
             border-radius: 8px;
             cursor: pointer;
             opacity: 0.7;
-            transition: opacity 0.2s;
+            transition: var(--transition);
         }
 
-        .sub-img:hover, .sub-img.active { opacity: 1; border: 2px solid var(--primary-gold); }
+        .sub-img:hover,
+        .sub-img.active {
+            opacity: 1;
+            border: 2px solid var(--primary-gold);
+            transform: scale(1.05);
+        }
 
         .detail-grid {
             display: grid;
@@ -383,31 +578,83 @@
             border-radius: 15px;
             position: sticky;
             top: 100px;
+            transition: var(--transition);
         }
 
-        .contact-options { display: grid; gap: 1rem; margin-top: 1.5rem; }
-        
-        .btn-whatsapp { background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; padding: 1rem; border-radius: 8px; font-weight: 600; }
-        .btn-call { background: var(--dark-bg); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; padding: 1rem; border-radius: 8px; font-weight: 600; }
-        .btn-insta { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; padding: 1rem; border-radius: 8px; font-weight: 600; margin-top: 1rem; }
+        .agent-box:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
 
-        .map-placeholder {
-            width: 100%;
-            height: 300px;
-            background: #eee;
-            border-radius: 10px;
+        .contact-options {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 2rem;
-            color: #777;
-            position: relative;
-            overflow: hidden;
+            gap: 10px;
+            text-decoration: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
         }
-        
-        .map-placeholder img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* ===== ADMIN & OWNER DASHBOARD ===== */
+        .btn-whatsapp:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-call {
+            background: var(--dark-bg);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-call:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-insta {
+            background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: var(--transition);
+        }
+
+        .btn-insta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(64, 93, 230, 0.3);
+        }
+
+        /* ===== DASHBOARD LAYOUT ===== */
         .dashboard-layout {
             display: flex;
             min-height: 100vh;
@@ -423,6 +670,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+            z-index: 1001;
         }
 
         .sidebar-brand {
@@ -439,7 +687,9 @@
             flex-grow: 1;
         }
 
-        .sidebar-menu li { margin-bottom: 1rem; }
+        .sidebar-menu li {
+            margin-bottom: 1rem;
+        }
 
         .sidebar-menu a {
             color: #aaa;
@@ -449,12 +699,14 @@
             gap: 15px;
             padding: 10px;
             border-radius: 8px;
-            transition: 0.3s;
+            transition: var(--transition);
         }
 
-        .sidebar-menu a:hover, .sidebar-menu a.active {
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
             background: rgba(212, 175, 55, 0.1);
             color: var(--primary-gold);
+            transform: translateX(5px);
         }
 
         .sidebar-footer {
@@ -462,13 +714,69 @@
             padding-top: 1rem;
         }
 
+        .sidebar-footer a {
+            color: #aaa;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .sidebar-footer a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
         .main-panel {
             margin-left: var(--sidebar-width);
             flex: 1;
             padding: 2rem;
             color: var(--text-dark);
+            animation: slideInRight 0.5s ease;
         }
 
+        /* ===== DASHBOARD TABS ===== */
+        .dashboard-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-dark);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-gold);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-gold);
+            border-bottom-color: var(--primary-gold);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== STATS & CHARTS ===== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -482,6 +790,12 @@
             border-radius: 10px;
             box-shadow: var(--shadow);
             border-left: 4px solid var(--primary-gold);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
         }
 
         .chart-container {
@@ -491,6 +805,231 @@
             box-shadow: var(--shadow);
             margin-bottom: 2rem;
             height: 400px;
+            transition: var(--transition);
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* ===== FORMS ===== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* ===== TABLES ===== */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--primary-gold);
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* ===== SETTINGS PAGE ===== */
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .settings-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .settings-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* ===== ACCESS REQUESTS ===== */
+        .access-requests {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .access-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .access-card:hover {
+            transform: translateX(5px);
+            border-color: var(--primary-gold);
+        }
+
+        .access-info h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-gold);
+        }
+
+        .access-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== IMAGE UPLOAD ===== */
+        .image-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--primary-gold);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-gold);
+            margin-bottom: 1rem;
+        }
+
+        /* ===== MODALS ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #777;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--primary-gold);
+            transform: rotate(90deg);
         }
 
         /* ===== FOOTER ===== */
@@ -517,12 +1056,13 @@
             letter-spacing: 1px;
         }
 
-        .footer-col p, .footer-col a {
+        .footer-col p,
+        .footer-col a {
             color: #bbb;
             margin-bottom: 1rem;
             display: block;
             text-decoration: none;
-            transition: color 0.3s;
+            transition: var(--transition);
             font-size: 0.95rem;
         }
         
@@ -531,142 +1071,103 @@
             padding-left: 5px;
         }
 
-        /* ===== VISITOR SETTINGS DROPDOWN ===== */
-        .settings-menu {
-            position: absolute;
-            top: 70px;
-            right: 2rem;
-            background: var(--card-bg);
-            width: 250px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            padding: 1rem 0;
-            display: none;
-            z-index: 1001;
-            border: 1px solid var(--border-color);
-        }
-
-        .settings-menu.active { display: block; animation: fadeIn 0.3s; }
-
-        .settings-header {
-            padding: 0 1.5rem 1rem;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .settings-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0.8rem 1.5rem;
-            color: var(--text-dark);
-            text-decoration: none;
-            transition: background 0.2s;
-            font-size: 0.95rem;
-            cursor: pointer;
-        }
-
-        .settings-item:hover { background: var(--gray-bg); color: var(--primary-gold); }
-
-        /* ===== AUTH MODALS ===== */
-        .auth-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            display: none;
-            align-items: center; justify-content: center;
-            backdrop-filter: blur(8px);
-        }
-        .auth-modal.active { display: flex; animation: fadeIn 0.3s; }
-        
-        .auth-content {
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 20px;
-            width: 90%; max-width: 450px;
-            border: 1px solid var(--primary-gold);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        .auth-close {
-            position: absolute; top: 15px; right: 20px;
-            font-size: 1.5rem; cursor: pointer; color: #777;
-        }
-        
-        .auth-choice-btn {
-            display: block; width: 100%; padding: 1rem; margin-bottom: 1rem;
-            border: 1px solid var(--border-color);
-            background: var(--gray-bg); border-radius: 10px;
-            font-weight: 600; cursor: pointer; text-align: left;
-            display: flex; align-items: center; gap: 15px;
-            transition: all 0.3s;
-        }
-
-        .auth-choice-btn:hover {
-            border-color: var(--primary-gold);
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .auth-choice-btn i { font-size: 1.5rem; color: var(--primary-gold); }
-
-        .auth-view { display: none; }
-        .auth-view.active { display: block; animation: slideIn 0.3s ease; }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .auth-link {
-            color: var(--primary-gold);
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* ===== MODALS GENERIC ===== */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 2000;
-            display: none;
-            align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 15px;
-            width: 90%; max-width: 400px;
-            animation: fadeIn 0.3s;
-        }
-
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .nav-menu {
-                position: fixed; top: 0; right: -100%;
-                width: 80%; height: 100vh;
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                height: 100vh;
                 background: var(--dark-bg);
                 flex-direction: column;
                 padding: 5rem 2rem;
                 transition: 0.4s;
+                z-index: 1000;
             }
-            .nav-menu.active { right: 0; }
-            .mobile-toggle { display: block; z-index: 1001; }
-            .search-inputs { grid-template-columns: 1fr; }
-            .detail-grid { grid-template-columns: 1fr; }
-            .gallery-container { grid-template-columns: 1fr; height: auto; }
-            .sub-imgs { flex-direction: row; height: 80px; overflow-x: auto; margin-top: 10px; }
-            .sidebar { display: none; } /* Mobile sidebar handling would be separate */
-            .main-panel { margin-left: 0; }
-            .dashboard-layout { flex-direction: column; }
+            
+            .nav-menu.active {
+                right: 0;
+            }
+            
+            .mobile-toggle {
+                display: block;
+                z-index: 1001;
+            }
+            
+            .search-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .sub-imgs {
+                flex-direction: row;
+                height: 80px;
+                overflow-x: auto;
+                margin-top: 10px;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                transition: 0.4s;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-panel {
+                margin-left: 0;
+            }
+            
+            .dashboard-layout {
+                flex-direction: column;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .search-box {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body data-theme="light">
-
+    
     <!-- NAVIGATION -->
     <nav class="navbar" id="mainNav">
         <div class="nav-container">
@@ -688,7 +1189,6 @@
                     <i class="fas fa-moon"></i>
                 </button>
 
-                <!-- Auth Section -->
                 <div id="authSection">
                     <button class="login-btn" onclick="openLoginModal()">Sign In</button>
                 </div>
@@ -696,36 +1196,35 @@
         </div>
     </nav>
 
-    <!-- SETTINGS DROPDOWN (Visitor) -->
+    <!-- VISITOR SETTINGS DROPDOWN -->
     <div class="settings-menu" id="visitorSettings">
         <div class="settings-header">
             <h4 id="settingsName">User Name</h4>
             <small onclick="logout()" style="color: red; cursor: pointer;">Sign Out</small>
         </div>
+        <a class="settings-item" onclick="openSettingsModal()"><i class="fas fa-user-cog"></i> Edit Profile</a>
+        <a class="settings-item" onclick="openSettingsModal()"><i class="fas fa-cog"></i> Account Settings</a>
         <a class="settings-item"><i class="fas fa-list"></i> My Listings</a>
         <a class="settings-item"><i class="fas fa-heart"></i> My Favourites</a>
         <a class="settings-item"><i class="fas fa-bell"></i> My Email Alerts</a>
         <a class="settings-item"><i class="fas fa-hand-holding-usd"></i> My Requests</a>
         <a class="settings-item"><i class="fas fa-file-contract"></i> My Applications</a>
         <a class="settings-item"><i class="fas fa-exchange-alt"></i> Compare Listings</a>
-        <a class="settings-item"><i class="fas fa-cog"></i> Account Settings</a>
     </div>
 
     <!-- MAIN CONTENT -->
     <div id="app-content">
-        
         <!-- HOME PAGE -->
         <div id="home-page" class="page active">
-            <section class="hero">
-                <!-- Interior Real Estate Video -->
-                <video autoplay muted loop playsinline>
+            <section class="hero parallax-section">
+                <video autoplay muted loop playsinline class="hero-video" id="parallaxVideo">
                     <source src="https://videos.pexels.com/video-files/7578544/7578544-hd_1920_1080_30fps.mp4" type="video/mp4">
                 </video>
                 <div class="hero-overlay">
                     <h1>Where Value Meets Vision</h1>
                     <p>Discover Zimbabwe's Most Exclusive Properties</p>
                     
-                    <div class="search-box">
+                    <div class="search-box animate-float">
                         <div class="search-tabs">
                             <button class="search-tab active" onclick="setSearchMode('buy', this)">Buy</button>
                             <button class="search-tab" onclick="setSearchMode('rent', this)">Rent</button>
@@ -746,25 +1245,24 @@
                                 <option>$100k</option>
                                 <option>$500k+</option>
                             </select>
-                            <button class="btn-primary"><i class="fas fa-search"></i> Search</button>
+                            <button class="btn-primary animate-pulse"><i class="fas fa-search"></i> Search</button>
                         </div>
                     </div>
                 </div>
             </section>
 
             <section class="container">
-                <h2 class="section-title">Featured Listings</h2>
+                <h2 class="section-title" data-aos="fade-up">Featured Listings</h2>
                 <div class="property-grid" id="featuredGrid">
                     <!-- JS Injected -->
                 </div>
             </section>
         </div>
 
-        <!-- LISTING PAGES (Template for Buy/Rent/Student) -->
+        <!-- LISTING PAGES -->
         <div id="listings-page" class="page">
             <div class="container">
-                <h2 class="section-title" id="listingTitle">Properties</h2>
-                <!-- Filters could go here -->
+                <h2 class="section-title" id="listingTitle" data-aos="fade-up">Properties</h2>
                 <div class="property-grid" id="mainGrid"></div>
             </div>
         </div>
@@ -776,9 +1274,7 @@
                 
                 <div class="gallery-container">
                     <img id="mainDetailImg" class="main-img" src="" alt="Main Property Image">
-                    <div class="sub-imgs" id="subImgsContainer">
-                        <!-- Thumbnails -->
-                    </div>
+                    <div class="sub-imgs" id="subImgsContainer"></div>
                 </div>
 
                 <div class="detail-grid">
@@ -787,20 +1283,10 @@
                         <p id="detailLoc" style="color:#777; margin-bottom:1.5rem;"><i class="fas fa-map-marker-alt"></i> Location</p>
                         
                         <h3 style="margin-bottom:1rem;">Description</h3>
-                        <p id="detailDesc" style="margin-bottom:2rem; white-space: pre-line;">
-                            Detailed description goes here...
-                        </p>
+                        <p id="detailDesc" style="margin-bottom:2rem; white-space: pre-line;"></p>
 
                         <h3 style="margin-bottom:1rem;">Property Features</h3>
-                        <div id="detailFeatures" class="card-features" style="border:none; padding:0; display:grid; grid-template-columns: repeat(2, 1fr);">
-                            <!-- Features -->
-                        </div>
-
-                        <!-- MAP PLACEHOLDER -->
-                        <div class="map-placeholder">
-                            <img src="https://maps.googleapis.com/maps/api/staticmap?center=-17.824858,31.053028&zoom=13&size=600x300&maptype=roadmap&key=" alt="Static Map Placeholder (Simulated)">
-                            <div style="position:absolute; background:white; padding:5px 10px; border-radius:5px; font-weight:bold;">Map View (Simulated)</div>
-                        </div>
+                        <div id="detailFeatures" class="card-features" style="border:none; padding:0; display:grid; grid-template-columns: repeat(2, 1fr);"></div>
                     </div>
 
                     <div class="agent-col">
@@ -853,14 +1339,15 @@
         </footer>
     </div>
 
-    <!-- NEW SMART LOGIN MODAL -->
-    <div id="authModal" class="auth-modal">
-        <div class="auth-content">
-            <span class="auth-close" onclick="closeAuthModal()">&times;</span>
+    <!-- AUTH MODAL -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Welcome to Aurum</h2>
+                <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            </div>
             
-            <!-- STEP 1: SELECT ROLE -->
             <div id="authStepRole" class="auth-view active">
-                <h2 style="text-align:center; margin-bottom:0.5rem;">Welcome to Aurum</h2>
                 <p style="text-align:center; margin-bottom:2rem; color:#777;">Please select how you want to continue</p>
                 
                 <button class="auth-choice-btn" onclick="showAuthView('authStepVisitor')">
@@ -880,11 +1367,9 @@
                 </button>
             </div>
 
-            <!-- STEP 2: VISITOR AUTH -->
             <div id="authStepVisitor" class="auth-view">
                 <div style="margin-bottom:1rem; cursor:pointer;" onclick="showAuthView('authStepRole')"><i class="fas fa-arrow-left"></i> Back</div>
                 
-                <!-- Visitor Login Form -->
                 <div id="visitorLoginForm">
                     <h2 style="margin-bottom:1.5rem;">Visitor Sign In</h2>
                     <form onsubmit="handleVisitorLogin(event)">
@@ -905,7 +1390,6 @@
                     </div>
                 </div>
 
-                <!-- Visitor Register Form -->
                 <div id="visitorRegisterForm" style="display:none;">
                     <h2 style="margin-bottom:1.5rem;">Create Account</h2>
                     <form onsubmit="handleVisitorRegister(event)">
@@ -928,7 +1412,6 @@
                     </div>
                 </div>
 
-                <!-- Visitor Forgot Password -->
                 <div id="visitorForgotForm" style="display:none;">
                     <h2 style="margin-bottom:1.5rem;">Reset Password</h2>
                     <p style="margin-bottom:1rem; color:#666;">Enter your email to receive a reset link.</p>
@@ -942,7 +1425,6 @@
                 </div>
             </div>
 
-            <!-- STEP 2: ADMIN AUTH -->
             <div id="authStepAdmin" class="auth-view">
                 <div style="margin-bottom:1rem; cursor:pointer;" onclick="showAuthView('authStepRole')"><i class="fas fa-arrow-left"></i> Back</div>
                 <h2 style="margin-bottom:1.5rem;">Admin Access</h2>
@@ -965,16 +1447,111 @@
         </div>
     </div>
 
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Account Settings</h2>
+                <button class="modal-close" onclick="closeModal('settingsModal')">&times;</button>
+            </div>
+            
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" onclick="openSettingsTab('profile')">Profile</button>
+                <button class="tab-btn" onclick="openSettingsTab('security')">Security</button>
+                <button class="tab-btn" onclick="openSettingsTab('notifications')">Notifications</button>
+            </div>
+            
+            <div id="settingsProfileTab" class="tab-content active">
+                <form onsubmit="updateProfile(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="profileName" value="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="profileEmail" value="john@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="profilePhone" value="+263 78 345 5849">
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Photo</label>
+                            <div class="image-upload-area" onclick="document.getElementById('profilePhotoInput').click()">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <p>Click to upload profile photo</p>
+                                <input type="file" id="profilePhotoInput" style="display:none;" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                        <button type="button" class="btn-primary" style="background:#6c757d;" onclick="closeModal('settingsModal')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="settingsSecurityTab" class="tab-content">
+                <form onsubmit="updateSecurity(event)">
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" id="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Update Password</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="settingsNotificationsTab" class="tab-content">
+                <div class="form-group">
+                    <label style="display:flex; align-items:center; gap:10px;">
+                        <input type="checkbox" id="emailNotifications" checked>
+                        Email Notifications
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label style="display:flex; align-items:center; gap:10px;">
+                        <input type="checkbox" id="smsNotifications">
+                        SMS Notifications
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label style="display:flex; align-items:center; gap:10px;">
+                        <input type="checkbox" id="newListingsAlert" checked>
+                        New Listings Alert
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-primary" onclick="saveNotificationSettings()">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ADMIN PANEL -->
     <div id="admin-panel" style="display:none;">
         <div class="dashboard-layout">
             <aside class="sidebar">
                 <div class="sidebar-brand"><i class="fas fa-gem"></i> ADMIN PANEL</div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                    <li><a href="#"><i class="fas fa-home"></i> Properties</a></li>
-                    <li><a href="#"><i class="fas fa-users"></i> Users</a></li>
-                    <li><a href="#"><i class="fas fa-envelope"></i> Messages</a></li>
+                    <li><a href="#" onclick="openAdminTab('dashboard')" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                    <li><a href="#" onclick="openAdminTab('properties')"><i class="fas fa-home"></i> Manage Properties</a></li>
+                    <li><a href="#" onclick="openAdminTab('users')"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="#" onclick="openAdminTab('visits')"><i class="fas fa-calendar-alt"></i> Scheduled Visits</a></li>
+                    <li><a href="#" onclick="openAdminTab('inquiries')"><i class="fas fa-envelope"></i> Client Inquiries</a></li>
+                    <li><a href="#" onclick="openSettingsModal()"><i class="fas fa-cog"></i> Settings</a></li>
                 </ul>
                 <div class="sidebar-footer">
                     <a href="#" onclick="backToSite()"><i class="fas fa-arrow-left"></i> Back to Site</a>
@@ -982,23 +1559,120 @@
                 </div>
             </aside>
             <main class="main-panel">
-                <h2>Admin Overview</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>1,204</h3>
-                        <p>Total Visitors</p>
+                <div id="adminDashboardTab" class="tab-content active">
+                    <h2>Admin Overview</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>1,204</h3>
+                            <p>Total Visitors</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>45</h3>
+                            <p>Active Listings</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>12</h3>
+                            <p>Pending Approvals</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>28</h3>
+                            <p>Scheduled Visits</p>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>45</h3>
-                        <p>Active Listings</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>12</h3>
-                        <p>Pending Approvals</p>
+                    <div class="chart-container">
+                        <canvas id="adminTrafficChart"></canvas>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="adminTrafficChart"></canvas>
+                
+                <div id="adminPropertiesTab" class="tab-content">
+                    <div class="settings-header">
+                        <h2>Manage Properties</h2>
+                        <button class="btn-primary" onclick="openPropertyModal()"><i class="fas fa-plus"></i> Add Property</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminPropertiesList"></tbody>
+                    </table>
+                </div>
+                
+                <div id="adminUsersTab" class="tab-content">
+                    <h2>User Management</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Doe</td>
+                                <td>john@example.com</td>
+                                <td><span style="background:#e3f2fd; color:#1976d2; padding:5px 10px; border-radius:20px;">Visitor</span></td>
+                                <td>2024-01-15</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="adminVisitsTab" class="tab-content">
+                    <div class="settings-header">
+                        <h2>Scheduled Visits</h2>
+                        <button class="btn-primary"><i class="fas fa-plus"></i> Schedule Visit</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Client Name</th>
+                                <th>Contact</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visitsList"></tbody>
+                    </table>
+                </div>
+                
+                <div id="adminInquiriesTab" class="tab-content">
+                    <h2>Client Inquiries</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Property</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sarah Johnson</td>
+                                <td>sarah@example.com</td>
+                                <td>Luxury Golf Estate</td>
+                                <td>Interested in viewing</td>
+                                <td>2024-01-20</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon btn-edit"><i class="fas fa-reply"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </main>
         </div>
@@ -1010,10 +1684,14 @@
             <aside class="sidebar">
                 <div class="sidebar-brand" style="color: var(--secondary-gold);"><i class="fas fa-crown"></i> OWNER SUITE</div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="active"><i class="fas fa-chart-pie"></i> Master Overview</a></li>
-                    <li><a href="#"><i class="fas fa-money-bill-wave"></i> Financials</a></li>
-                    <li><a href="#"><i class="fas fa-user-shield"></i> Admin Management</a></li>
-                    <li><a href="#"><i class="fas fa-globe"></i> Site Analytics</a></li>
+                    <li><a href="#" onclick="openOwnerTab('dashboard')" class="active"><i class="fas fa-chart-pie"></i> Master Overview</a></li>
+                    <li><a href="#" onclick="openOwnerTab('financials')"><i class="fas fa-money-bill-wave"></i> Financials</a></li>
+                    <li><a href="#" onclick="openOwnerTab('admins')"><i class="fas fa-user-shield"></i> Manage Admins</a></li>
+                    <li><a href="#" onclick="openOwnerTab('access')"><i class="fas fa-user-plus"></i> Access Requests</a></li>
+                    <li><a href="#" onclick="openOwnerTab('properties')"><i class="fas fa-home"></i> Property Management</a></li>
+                    <li><a href="#" onclick="openOwnerTab('clients')"><i class="fas fa-users"></i> Client Management</a></li>
+                    <li><a href="#" onclick="openOwnerTab('analytics')"><i class="fas fa-globe"></i> Site Analytics</a></li>
+                    <li><a href="#" onclick="openSettingsModal()"><i class="fas fa-cog"></i> Settings</a></li>
                 </ul>
                 <div class="sidebar-footer">
                     <a href="#" onclick="backToSite()"><i class="fas fa-arrow-left"></i> Back to Site</a>
@@ -1021,25 +1699,262 @@
                 </div>
             </aside>
             <main class="main-panel">
-                <h2>Owner Dashboard - Welcome Victor</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>$2.4M</h3>
-                        <p>Portfolio Value</p>
+                <div id="ownerDashboardTab" class="tab-content active">
+                    <h2>Owner Dashboard - Welcome Victor</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>$2.4M</h3>
+                            <p>Portfolio Value</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>+18%</h3>
+                            <p>Monthly Growth</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>850</h3>
+                            <p>Leads Generated</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>45</h3>
+                            <p>Active Listings</p>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>+18%</h3>
-                        <p>Monthly Growth</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>850</h3>
-                        <p>Leads Generated</p>
+                    <div class="chart-container">
+                        <canvas id="ownerTrafficChart"></canvas>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="ownerTrafficChart"></canvas>
+                
+                <div id="ownerFinancialsTab" class="tab-content">
+                    <h2>Financial Overview</h2>
+                    <div class="chart-container">
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                </div>
+                
+                <div id="ownerAdminsTab" class="tab-content">
+                    <div class="settings-header">
+                        <h2>Manage Admin Users</h2>
+                        <button class="btn-primary" onclick="openAdminModal()"><i class="fas fa-plus"></i> Add New Admin</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminsList"></tbody>
+                    </table>
+                </div>
+                
+                <div id="ownerAccessTab" class="tab-content">
+                    <div class="settings-header">
+                        <h2>Access Requests</h2>
+                    </div>
+                    <div class="access-requests" id="accessRequestsList"></div>
+                </div>
+                
+                <div id="ownerPropertiesTab" class="tab-content">
+                    <div class="settings-header">
+                        <h2>Property Management</h2>
+                        <button class="btn-primary" onclick="openPropertyModal()"><i class="fas fa-plus"></i> Add Property</button>
+                    </div>
+                    <div class="property-grid" id="ownerPropertiesGrid"></div>
+                </div>
+                
+                <div id="ownerClientsTab" class="tab-content">
+                    <h2>Client Management</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>28</h3>
+                            <p>Scheduled Visits</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>156</h3>
+                            <p>Client Inquiries</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>45</h3>
+                            <p>Active Clients</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="ownerAnalyticsTab" class="tab-content">
+                    <h2>Site Analytics</h2>
+                    <div class="chart-container">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- PROPERTY MODAL -->
+    <div id="propertyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Property</h2>
+                <button class="modal-close" onclick="closeModal('propertyModal')">&times;</button>
+            </div>
+            
+            <form onsubmit="saveProperty(event)" id="propertyForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Property Title *</label>
+                        <input type="text" id="propTitle" placeholder="Luxury Penthouse in Manhattan" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="propCategory" required>
+                            <option value="">Select Category</option>
+                            <option>House</option>
+                            <option>Apartment</option>
+                            <option>Land</option>
+                            <option>Commercial</option>
+                            <option>Student Housing</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Property Type</label>
+                        <input type="text" id="propType" placeholder="Luxury Villa">
+                    </div>
+                    <div class="form-group">
+                        <label>Price *</label>
+                        <input type="text" id="propPrice" placeholder="$12,500,000 or $15,000/month" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Location *</label>
+                        <input type="text" id="propLocation" placeholder="Manhattan, New York" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Province/State</label>
+                        <input type="text" id="propProvince" placeholder="Harare">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="propStatus">
+                            <option>Available</option>
+                            <option>Sold</option>
+                            <option>Rented</option>
+                            <option>Pending</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Bedrooms</label>
+                        <input type="number" id="propBedrooms" placeholder="4">
+                    </div>
+                    <div class="form-group">
+                        <label>Bathrooms</label>
+                        <input type="number" id="propBathrooms" placeholder="3">
+                    </div>
+                    <div class="form-group">
+                        <label>Area (sqft)</label>
+                        <input type="number" id="propArea" placeholder="3500">
+                    </div>
+                    <div class="form-group">
+                        <label>Year Built</label>
+                        <input type="number" id="propYearBuilt" placeholder="2020">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Description</label>
+                        <textarea id="propDesc" rows="4" placeholder="Detailed property description..."></textarea>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Features (comma separated)</label>
+                        <input type="text" id="propFeatures" placeholder="Swimming pool, Gym, Garden, Security, Smart Home">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Property Images</label>
+                        <div class="image-upload-area" onclick="document.getElementById('propImagesInput').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <p>Click to upload property images (Recommended: High-quality images, 1920×1080px)</p>
+                            <input type="file" id="propImagesInput" style="display:none;" accept="image/*" multiple>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Email</label>
+                        <input type="email" id="propContactEmail" placeholder="agent@aurumrealestate.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Phone</label>
+                        <input type="tel" id="propContactPhone" placeholder="+1 (555) 123-4567">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary"><i class="fas fa-plus"></i> Add Property to Listings</button>
+                    <button type="button" class="btn-primary" style="background:#6c757d;" onclick="closeModal('propertyModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN MODAL -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Admin</h2>
+                <button class="modal-close" onclick="closeModal('adminModal')">&times;</button>
+            </div>
+            
+            <form onsubmit="saveAdmin(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Username *</label>
+                        <input type="text" id="adminUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="adminFullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="adminEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role *</label>
+                        <select id="adminRole" required>
+                            <option value="admin">Admin</option>
+                            <option value="manager">Manager</option>
+                            <option value="agent">Agent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Temporary Password *</label>
+                        <input type="password" id="adminTempPass" required>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Permissions</label>
+                        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px;">
+                            <label style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="permProperties" checked>
+                                Manage Properties
+                            </label>
+                            <label style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="permUsers">
+                                Manage Users
+                            </label>
+                            <label style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="permVisits" checked>
+                                Manage Visits
+                            </label>
+                            <label style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="permReports">
+                                View Reports
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Add Admin User</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1057,61 +1972,97 @@
     </div>
 
     <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+
         // ===== DATA STORE =====
         const DB = {
             properties: [
                 {
-                    id: 1, type: 'buy', cat: 'House', price: 450000, title: 'Luxury Golf Estate Home', loc: 'Borrowdale Brooke',
-                    beds: 4, baths: 3, area: 2000,
+                    id: 1,
+                    type: 'buy',
+                    cat: 'House',
+                    price: 450000,
+                    title: 'Luxury Golf Estate Home',
+                    loc: 'Borrowdale Brooke, Harare',
+                    beds: 4,
+                    baths: 3,
+                    area: 2000,
+                    year: 2020,
                     desc: "Experience the pinnacle of luxury living in the prestigious Borrowdale Brooke Golf Estate. This magnificent 4-bedroom home offers breathtaking views of the fairway, a state-of-the-art solar system, and a modern open-plan kitchen. Security is paramount with 24-hour patrols. The lush garden features a sparkling pool and entertainment gazebo perfect for hosting guests.",
                     images: Array(10).fill('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'),
-                    features: ['Golf Course View', 'Solar System', 'Borehole', 'Swimming Pool', 'Gated Community', 'Double Garage']
-                },
-                {
-                    id: 2, type: 'rent', cat: 'Apartment', price: 1200, title: 'Modern Garden Flat', loc: 'Avondale',
-                    beds: 2, baths: 2, area: 120,
-                    desc: "A beautifully renovated garden flat located within walking distance to Avondale Shopping Centre. Features include a modern fitted kitchen, teak flooring, and a private garden. The complex is highly secure with electric fencing and a night guard. Perfect for young professionals or a small family.",
-                    images: Array(10).fill('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80'),
-                    features: ['Borehole', 'Security', 'Garden', 'Fitted Kitchen', 'WiFi Ready']
-                },
-                {
-                    id: 3, type: 'student', cat: 'Room', price: 200, title: 'Student Accommodation', loc: 'Mt Pleasant',
-                    beds: 1, baths: 1, area: 25,
-                    desc: "Affordable and secure student accommodation just 5 minutes walk from UZ. Rent includes water, electricity, and unlimited WiFi. The property has a shared kitchen and study area. A resident warden ensures a quiet environment for studying.",
-                    images: Array(10).fill('https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80'),
-                    features: ['Walk to UZ', 'WiFi Included', 'Furnished', 'Study Desk', 'Solar Backup']
-                },
-                {
-                    id: 4, type: 'buy', cat: 'House', price: 280000, title: 'Family Home', loc: 'Highlands',
-                    beds: 3, baths: 2, area: 4000,
-                    desc: "Spacious family home on an acre of flat land. Potential for cluster development.",
-                    images: Array(10).fill('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80'),
-                    features: ['4000sqm Land', 'Old Charm', 'Staff Quarters']
+                    features: ['Golf Course View', 'Solar System', 'Borehole', 'Swimming Pool', 'Gated Community', 'Double Garage'],
+                    contactEmail: 'agent@aurumrealestate.com',
+                    contactPhone: '+1 (555) 123-4567',
+                    province: 'Harare',
+                    status: 'Available'
                 }
             ],
-            currentUser: null
+            currentUser: null,
+            admins: [
+                { id: 1, username: 'Victor', fullName: 'Victor Tendai', email: 'victor@aurumrealestate.com', role: 'Owner', created: '9/12/2025' },
+                { id: 2, username: 'admin1', fullName: 'Sarah Johnson', email: 'sarah@aurumrealestate.com', role: 'admin', created: '8/12/2025' }
+            ],
+            accessRequests: [
+                { id: 1, name: 'John Smith', email: 'john@example.com', role: 'admin', date: '10/12/2025', message: 'Requesting admin access to manage properties.' }
+            ],
+            visits: [
+                { id: 1, property: 'Luxury Golf Estate', client: 'Michael Brown', contact: 'michael@example.com', date: '2024-01-25 14:00', status: 'Scheduled' }
+            ]
         };
 
         // ===== INITIALIZATION =====
         window.onload = () => {
             renderProperties();
             checkSession();
+            initParallax();
+            initScrollEffects();
         };
+
+        function initParallax() {
+            const video = document.querySelector('.hero-video');
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const rate = scrolled * -0.5;
+                if (video) {
+                    video.style.transform = `translate3d(0, ${rate}px, 0) scale(1.1)`;
+                }
+            });
+        }
+
+        function initScrollEffects() {
+            const navbar = document.getElementById('mainNav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    navbar.classList.add('navbar-scrolled');
+                } else {
+                    navbar.classList.remove('navbar-scrolled');
+                }
+            });
+        }
 
         function route(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('navMenu').classList.remove('active'); // Close mobile menu
+            document.getElementById('navMenu').classList.remove('active');
             
-            if(pageId === 'home') document.getElementById('home-page').classList.add('active');
-            else if (['buying', 'renting', 'student'].includes(pageId)) {
+            if(pageId === 'home') {
+                document.getElementById('home-page').classList.add('active');
+            } else if (['buying', 'renting', 'student'].includes(pageId)) {
                 document.getElementById('listings-page').classList.add('active');
                 renderCategory(pageId);
             }
-            // Removed direct routing to login page as it's now a modal
         }
 
         function checkSession() {
-            // Simple session check logic if needed
+            const user = JSON.parse(localStorage.getItem('aurumUser'));
+            if (user) {
+                DB.currentUser = user;
+                loginSuccess(user, true);
+            }
         }
 
         // ===== RENDERING =====
@@ -1138,7 +2089,7 @@
                     <div class="card-details">
                         <h3 style="margin-bottom:0.5rem;">${p.title}</h3>
                         <p style="color:#777; margin-bottom:0.5rem;"><i class="fas fa-map-marker-alt"></i> ${p.loc}</p>
-                        <div class="card-price">$${p.price.toLocaleString()}</div>
+                        <div class="card-price">${formatPrice(p.price)}</div>
                         <div class="card-features">
                             <span><i class="fas fa-bed"></i> ${p.beds}</span>
                             <span><i class="fas fa-bath"></i> ${p.baths}</span>
@@ -1149,32 +2100,35 @@
             `;
         }
 
-        // ===== DETAILS & GALLERY =====
+        function formatPrice(price) {
+            if (typeof price === 'number') {
+                return '$' + price.toLocaleString();
+            }
+            return price;
+        }
+
+        // ===== PROPERTY DETAILS =====
         let currentDetailId = null;
 
         function openDetail(id) {
             const p = DB.properties.find(x => x.id === id);
             currentDetailId = id;
 
-            // DOM Elements
             document.getElementById('detailTitle').innerText = p.title;
             document.getElementById('detailLoc').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${p.loc}`;
-            document.getElementById('detailPrice').innerText = `$${p.price.toLocaleString()}`;
+            document.getElementById('detailPrice').innerText = formatPrice(p.price);
             document.getElementById('detailDesc').innerText = p.desc;
             document.getElementById('mainDetailImg').src = p.images[0];
 
-            // Features
             document.getElementById('detailFeatures').innerHTML = p.features.map(f => 
                 `<span><i class="fas fa-check-circle" style="color:var(--primary-gold);"></i> ${f}</span>`
             ).join('');
 
-            // Gallery
             const subContainer = document.getElementById('subImgsContainer');
             subContainer.innerHTML = p.images.map((img, index) => 
-                `<img src="${img}" class="sub-img" onclick="changeMainImg('${img}', this)">`
+                `<img src="${img}" class="sub-img ${index === 0 ? 'active' : ''}" onclick="changeMainImg('${img}', this)">`
             ).join('');
 
-            // Switch view
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('detail-page').classList.add('active');
             window.scrollTo(0,0);
@@ -1186,29 +2140,10 @@
             el.classList.add('active');
         }
 
-        // ===== WHATSAPP & CONTACT =====
-        function openWhatsAppModal() {
-            document.getElementById('waModal').classList.add('active');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        function sendWhatsApp() {
-            const p = DB.properties.find(x => x.id === currentDetailId);
-            const msg = document.getElementById('waMessage').value;
-            const fullMsg = `${msg} (Ref: ${p.title})`;
-            const url = `https://wa.me/263783455849?text=${encodeURIComponent(fullMsg)}`;
-            window.open(url, '_blank');
-            closeModal('waModal');
-        }
-
-        // ===== AUTHENTICATION LOGIC (MODAL BASED) =====
-        
+        // ===== AUTHENTICATION =====
         function openLoginModal() {
             document.getElementById('authModal').classList.add('active');
-            showAuthView('authStepRole'); // Reset to role selection
+            showAuthView('authStepRole');
         }
 
         function closeAuthModal() {
@@ -1221,47 +2156,45 @@
         }
 
         function toggleVisitorForms(formType) {
-            document.getElementById('visitorLoginForm').style.display = 'none';
-            document.getElementById('visitorRegisterForm').style.display = 'none';
-            document.getElementById('visitorForgotForm').style.display = 'none';
-
-            if(formType === 'login') document.getElementById('visitorLoginForm').style.display = 'block';
-            else if(formType === 'register') document.getElementById('visitorRegisterForm').style.display = 'block';
-            else if(formType === 'forgot') document.getElementById('visitorForgotForm').style.display = 'block';
+            ['visitorLoginForm', 'visitorRegisterForm', 'visitorForgotForm'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById(`visitor${formType.charAt(0).toUpperCase() + formType.slice(1)}Form`).style.display = 'block';
         }
 
-        // VISITOR LOGIC
         function handleVisitorLogin(e) {
             e.preventDefault();
             const email = document.getElementById('visitorEmail').value;
-            // Mock Login
-            loginSuccess({ name: email.split('@')[0], role: 'visitor' });
+            const user = { name: email.split('@')[0], role: 'visitor', email: email };
+            localStorage.setItem('aurumUser', JSON.stringify(user));
+            loginSuccess(user);
             closeAuthModal();
         }
 
         function handleVisitorRegister(e) {
             e.preventDefault();
             const name = document.getElementById('regName').value;
-            alert(`Account created for ${name}! Please sign in.`);
-            toggleVisitorForms('login');
+            const email = document.getElementById('regEmail').value;
+            const user = { name: name, role: 'visitor', email: email };
+            localStorage.setItem('aurumUser', JSON.stringify(user));
+            alert(`Welcome ${name}! Your account has been created.`);
+            loginSuccess(user);
+            closeAuthModal();
         }
 
-        function sendResetLink() {
-            const email = document.getElementById('resetEmail').value;
-            alert(`Password reset link sent to ${email}`);
-            toggleVisitorForms('login');
-        }
-
-        // ADMIN LOGIC
         function handleAdminLogin(e) {
             e.preventDefault();
             const user = document.getElementById('adminUser').value;
             const pass = document.getElementById('adminPass').value;
 
             if (user === 'Victor' && pass === 'Tendai') {
-                loginSuccess({ name: 'Victor', role: 'owner' });
+                const owner = { name: 'Victor', role: 'owner', email: 'victor@aurumrealestate.com' };
+                localStorage.setItem('aurumUser', JSON.stringify(owner));
+                loginSuccess(owner);
             } else if (user === 'admin' && pass === 'admin123') {
-                loginSuccess({ name: 'Admin', role: 'admin' });
+                const admin = { name: 'Admin', role: 'admin', email: 'admin@aurumrealestate.com' };
+                localStorage.setItem('aurumUser', JSON.stringify(admin));
+                loginSuccess(admin);
             } else {
                 alert('Invalid Admin Credentials');
                 return;
@@ -1270,32 +2203,45 @@
         }
 
         function requestAccess() {
-            alert("Access request sent to Owner (Victor). You will be notified via email.");
+            const email = prompt('Enter your email to request access:');
+            if (email) {
+                DB.accessRequests.push({
+                    id: Date.now(),
+                    name: email.split('@')[0],
+                    email: email,
+                    role: 'admin',
+                    date: new Date().toLocaleDateString(),
+                    message: 'Requesting admin access'
+                });
+                alert('Access request sent to Owner (Victor). You will be notified via email.');
+            }
         }
 
-        // COMMON SUCCESS
-        function loginSuccess(user) {
+        function loginSuccess(user, fromSession = false) {
             DB.currentUser = user;
             
-            // Redirect based on role
             if(user.role === 'owner') {
                 initOwnerDashboard();
             } else if(user.role === 'admin') {
                 initAdminDashboard();
             } else {
-                // Visitor
                 document.getElementById('authSection').innerHTML = `
                     <button class="settings-trigger" onclick="toggleSettingsMenu()">
                         <i class="fas fa-user-circle" style="font-size:1.5rem;"></i>
                     </button>
                 `;
                 document.getElementById('settingsName').innerText = user.name;
-                route('home');
+                if (!fromSession) route('home');
             }
+            
+            updateAccessRequests();
+            updateAdminList();
+            updateVisitsList();
         }
 
         function logout() {
             DB.currentUser = null;
+            localStorage.removeItem('aurumUser');
             document.getElementById('authSection').innerHTML = `<button class="login-btn" onclick="openLoginModal()">Sign In</button>`;
             document.getElementById('visitorSettings').classList.remove('active');
             document.getElementById('admin-panel').style.display = 'none';
@@ -1305,20 +2251,18 @@
             route('home');
         }
 
-        // Visitor Settings Toggle
         function toggleSettingsMenu() {
             const menu = document.getElementById('visitorSettings');
             menu.classList.toggle('active');
         }
 
-        // ===== ADMIN/OWNER DASHBOARDS =====
+        // ===== DASHBOARD FUNCTIONS =====
         function backToSite() {
             document.getElementById('admin-panel').style.display = 'none';
             document.getElementById('owner-panel').style.display = 'none';
             document.getElementById('mainNav').style.display = 'block';
             document.getElementById('app-content').style.display = 'block';
             
-            // Update Nav to show "Back to Admin"
             document.getElementById('authSection').innerHTML = `
                 <button onclick="returnToDashboard()" class="login-btn" style="background:#333; color:white!important;">
                     <i class="fas fa-columns"></i> Dashboard
@@ -1335,36 +2279,387 @@
         function initAdminDashboard() {
             hideApp();
             document.getElementById('admin-panel').style.display = 'block';
+            openAdminTab('dashboard');
             renderCharts('adminTrafficChart');
+            updateAdminPropertiesList();
+            updateVisitsList();
         }
 
         function initOwnerDashboard() {
             hideApp();
             document.getElementById('owner-panel').style.display = 'block';
+            openOwnerTab('dashboard');
             renderCharts('ownerTrafficChart');
-        }
-
-        function renderCharts(id) {
-            const ctx = document.getElementById(id);
-            if(window[id] instanceof Chart) { window[id].destroy(); } // destroy old instance if exists
-            
-            window[id] = new Chart(ctx, {
-                type: id.includes('admin') ? 'line' : 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Performance',
-                        data: [12, 19, 3, 5, 2, 3],
-                        backgroundColor: '#D4AF37',
-                        borderColor: '#D4AF37'
-                    }]
-                }
-            });
+            updateAdminList();
+            updateAccessRequests();
+            updateOwnerProperties();
+            renderFinancialChart();
+            renderAnalyticsChart();
         }
 
         function hideApp() {
             document.getElementById('app-content').style.display = 'none';
             document.getElementById('mainNav').style.display = 'none';
+        }
+
+        // ===== TAB MANAGEMENT =====
+        function openAdminTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu a').forEach(link => link.classList.remove('active'));
+            document.getElementById(`admin${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function openOwnerTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu a').forEach(link => link.classList.remove('active'));
+            document.getElementById(`owner${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function openSettingsTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`settings${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ===== MODAL FUNCTIONS =====
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openSettingsModal() {
+            if (!DB.currentUser) {
+                alert('Please login to access settings');
+                return;
+            }
+            openModal('settingsModal');
+        }
+
+        function openPropertyModal() {
+            openModal('propertyModal');
+        }
+
+        function openAdminModal() {
+            openModal('adminModal');
+        }
+
+        function openWhatsAppModal() {
+            openModal('waModal');
+        }
+
+        function sendWhatsApp() {
+            const p = DB.properties.find(x => x.id === currentDetailId);
+            const msg = document.getElementById('waMessage').value;
+            const fullMsg = `${msg} (Ref: ${p.title})`;
+            const url = `https://wa.me/263783455849?text=${encodeURIComponent(fullMsg)}`;
+            window.open(url, '_blank');
+            closeModal('waModal');
+        }
+
+        // ===== PROPERTY MANAGEMENT =====
+        function saveProperty(e) {
+            e.preventDefault();
+            const property = {
+                id: Date.now(),
+                type: 'buy',
+                cat: document.getElementById('propCategory').value,
+                price: document.getElementById('propPrice').value,
+                title: document.getElementById('propTitle').value,
+                loc: document.getElementById('propLocation').value,
+                beds: parseInt(document.getElementById('propBedrooms').value) || 0,
+                baths: parseInt(document.getElementById('propBathrooms').value) || 0,
+                area: parseInt(document.getElementById('propArea').value) || 0,
+                year: parseInt(document.getElementById('propYearBuilt').value) || 2024,
+                desc: document.getElementById('propDesc').value,
+                images: Array(5).fill('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'),
+                features: document.getElementById('propFeatures').value.split(',').map(f => f.trim()),
+                contactEmail: document.getElementById('propContactEmail').value,
+                contactPhone: document.getElementById('propContactPhone').value,
+                province: document.getElementById('propProvince').value,
+                status: document.getElementById('propStatus').value
+            };
+            
+            DB.properties.push(property);
+            alert('Property added successfully!');
+            closeModal('propertyModal');
+            updateAdminPropertiesList();
+            updateOwnerProperties();
+            renderProperties();
+        }
+
+        function updateAdminPropertiesList() {
+            const container = document.getElementById('adminPropertiesList');
+            if (!container) return;
+            
+            container.innerHTML = DB.properties.map(p => `
+                <tr>
+                    <td>${p.title}</td>
+                    <td>${p.cat}</td>
+                    <td>${formatPrice(p.price)}</td>
+                    <td><span style="background:#e3f2fd; color:#1976d2; padding:5px 10px; border-radius:20px;">${p.status}</span></td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="btn-icon btn-edit" onclick="editProperty(${p.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon btn-delete" onclick="deleteProperty(${p.id})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateOwnerProperties() {
+            const container = document.getElementById('ownerPropertiesGrid');
+            if (!container) return;
+            
+            container.innerHTML = DB.properties.slice(0, 4).map(p => createCard(p)).join('');
+        }
+
+        function editProperty(id) {
+            const p = DB.properties.find(x => x.id === id);
+            if (p) {
+                document.getElementById('propTitle').value = p.title;
+                document.getElementById('propCategory').value = p.cat;
+                document.getElementById('propPrice').value = p.price;
+                document.getElementById('propLocation').value = p.loc;
+                document.getElementById('propBedrooms').value = p.beds;
+                document.getElementById('propBathrooms').value = p.baths;
+                document.getElementById('propArea').value = p.area;
+                document.getElementById('propYearBuilt').value = p.year;
+                document.getElementById('propDesc').value = p.desc;
+                document.getElementById('propFeatures').value = p.features.join(', ');
+                document.getElementById('propContactEmail').value = p.contactEmail;
+                document.getElementById('propContactPhone').value = p.contactPhone;
+                document.getElementById('propProvince').value = p.province;
+                document.getElementById('propStatus').value = p.status;
+                openPropertyModal();
+            }
+        }
+
+        function deleteProperty(id) {
+            if (confirm('Are you sure you want to delete this property?')) {
+                DB.properties = DB.properties.filter(p => p.id !== id);
+                updateAdminPropertiesList();
+                updateOwnerProperties();
+                renderProperties();
+            }
+        }
+
+        // ===== ADMIN MANAGEMENT =====
+        function saveAdmin(e) {
+            e.preventDefault();
+            const admin = {
+                id: Date.now(),
+                username: document.getElementById('adminUsername').value,
+                fullName: document.getElementById('adminFullName').value,
+                email: document.getElementById('adminEmail').value,
+                role: document.getElementById('adminRole').value,
+                created: new Date().toLocaleDateString()
+            };
+            
+            DB.admins.push(admin);
+            alert('Admin added successfully!');
+            closeModal('adminModal');
+            updateAdminList();
+        }
+
+        function updateAdminList() {
+            const container = document.getElementById('adminsList');
+            if (!container) return;
+            
+            container.innerHTML = DB.admins.map(admin => `
+                <tr>
+                    <td>${admin.username}</td>
+                    <td>${admin.fullName}</td>
+                    <td>${admin.email}</td>
+                    <td><span style="background:${admin.role === 'Owner' ? '#fff3cd' : '#e3f2fd'}; color:${admin.role === 'Owner' ? '#856404' : '#1976d2'}; padding:5px 10px; border-radius:20px;">${admin.role}</span></td>
+                    <td>${admin.created}</td>
+                    <td>
+                        ${admin.role === 'Owner' ? 'Owner Account' : `
+                            <div class="table-actions">
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete" onclick="removeAdmin(${admin.id})"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function removeAdmin(id) {
+            if (confirm('Are you sure you want to remove this admin?')) {
+                DB.admins = DB.admins.filter(a => a.id !== id && a.role !== 'Owner');
+                updateAdminList();
+            }
+        }
+
+        // ===== ACCESS REQUESTS =====
+        function updateAccessRequests() {
+            const container = document.getElementById('accessRequestsList');
+            if (!container) return;
+            
+            container.innerHTML = DB.accessRequests.map(req => `
+                <div class="access-card">
+                    <div class="access-info">
+                        <h4>${req.name}</h4>
+                        <p>${req.email}</p>
+                        <small>Requested ${req.role} access on ${req.date}</small>
+                    </div>
+                    <div class="access-actions">
+                        <button class="btn-primary" onclick="approveRequest(${req.id})">Approve</button>
+                        <button class="btn-primary" style="background:#6c757d;" onclick="denyRequest(${req.id})">Deny</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function approveRequest(id) {
+            const req = DB.accessRequests.find(r => r.id === id);
+            if (req) {
+                DB.admins.push({
+                    id: Date.now(),
+                    username: req.name.toLowerCase().replace(/\s+/g, ''),
+                    fullName: req.name,
+                    email: req.email,
+                    role: req.role,
+                    created: new Date().toLocaleDateString()
+                });
+                DB.accessRequests = DB.accessRequests.filter(r => r.id !== id);
+                updateAccessRequests();
+                updateAdminList();
+                alert('Access request approved! New admin added.');
+            }
+        }
+
+        function denyRequest(id) {
+            DB.accessRequests = DB.accessRequests.filter(r => r.id !== id);
+            updateAccessRequests();
+            alert('Access request denied.');
+        }
+
+        // ===== VISITS MANAGEMENT =====
+        function updateVisitsList() {
+            const container = document.getElementById('visitsList');
+            if (!container) return;
+            
+            container.innerHTML = DB.visits.map(visit => `
+                <tr>
+                    <td>${visit.property}</td>
+                    <td>${visit.client}</td>
+                    <td>${visit.contact}</td>
+                    <td>${visit.date}</td>
+                    <td><span style="background:#d4edda; color:#155724; padding:5px 10px; border-radius:20px;">${visit.status}</span></td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ===== CHARTS =====
+        function renderCharts(id) {
+            const ctx = document.getElementById(id);
+            if (!ctx) return;
+            
+            if(window[id] instanceof Chart) {
+                window[id].destroy();
+            }
+            
+            const isOwner = id.includes('owner');
+            window[id] = new Chart(ctx, {
+                type: isOwner ? 'bar' : 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: isOwner ? 'Revenue ($)' : 'Visitors',
+                        data: isOwner ? 
+                            [12000, 19000, 15000, 25000, 22000, 30000, 28000, 32000, 30000, 35000, 38000, 42000] :
+                            [120, 190, 150, 250, 220, 300, 280, 320, 300, 350, 380, 420],
+                        backgroundColor: isOwner ? 'rgba(212, 175, 55, 0.2)' : 'rgba(212, 175, 55, 0.1)',
+                        borderColor: 'var(--primary-gold)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderFinancialChart() {
+            const ctx = document.getElementById('financialChart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Property Sales', 'Rental Income', 'Management Fees', 'Other'],
+                    datasets: [{
+                        data: [45, 30, 20, 5],
+                        backgroundColor: [
+                            'var(--primary-gold)',
+                            'var(--secondary-gold)',
+                            '#B8860B',
+                            '#FFF9E6'
+                        ]
+                    }]
+                }
+            });
+        }
+
+        function renderAnalyticsChart() {
+            const ctx = document.getElementById('analyticsChart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Website Visits', 'Property Views', 'Contact Forms', 'Scheduled Visits'],
+                    datasets: [{
+                        data: [1204, 856, 156, 28],
+                        backgroundColor: [
+                            'var(--primary-gold)',
+                            'var(--secondary-gold)',
+                            '#B8860B',
+                            '#FFF9E6'
+                        ]
+                    }]
+                }
+            });
+        }
+
+        // ===== SETTINGS =====
+        function updateProfile(e) {
+            e.preventDefault();
+            const name = document.getElementById('profileName').value;
+            DB.currentUser.name = name;
+            localStorage.setItem('aurumUser', JSON.stringify(DB.currentUser));
+            document.getElementById('settingsName').innerText = name;
+            alert('Profile updated successfully!');
+            closeModal('settingsModal');
         }
 
         // ===== UTILS =====
@@ -1374,17 +2669,25 @@
             const next = current === 'light' ? 'dark' : 'light';
             body.setAttribute('data-theme', next);
             document.querySelector('.theme-btn i').className = next === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('aurumTheme', next);
         }
 
         function toggleMenu() {
-            document.getElementById('navMenu').classList.toggle('active');
+            const menu = document.getElementById('navMenu');
+            menu.classList.toggle('active');
+            document.querySelector('.mobile-toggle i').className = 
+                menu.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
         }
 
         function setSearchMode(mode, btn) {
             document.querySelectorAll('.search-tab').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            // Update dropdown options logic here if needed
         }
+
+        // Initialize theme from localStorage
+        const savedTheme = localStorage.getItem('aurumTheme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        document.querySelector('.theme-btn i').className = savedTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
     </script>
 </body>
 </html>
